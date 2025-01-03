@@ -1,0 +1,27 @@
+# .editorconfig file for CommonRuntime
+
+#
+# Global settings
+#
+[*]
+
+# Unix-style newlines
+end_of_line = lf
+
+# UTF-8 encoding
+charset = utf-8
+
+#
+# Language-specific settings
+#
+
+[*.{c,cpp,h,hpp}]
+indent_style = space
+indent_size = 2
+
+[*.{pl,pm}]
+indent_style = space
+indent_size = 2
+
+[Makefile]
+indent_style = tab
