@@ -83,7 +83,7 @@ public:
     try {
       if (mScalingSetSpeed != "<unsupported>")
         sysfs_write(mPath / "scaling_setspeed", mScalingSetSpeed);
-      std::cerr << "mScalingGovernor: " << mScalingGovernor << std::endl; //XXX
+
       sysfs_write(mPath / "scaling_governor", mScalingGovernor);
     }
     catch (std::exception& e) {
@@ -227,12 +227,16 @@ public:
   }
 };
 
+//
+// Create the correct CPUPerformanceDriver subclass for the system.
+//
+
 CPUPerformanceDriver* CPUPerformanceDriver::create()
 {
   if (fs::exists(PATH_AMD_PSTATE))
     return new CPUAMDPStatePerformanceDriver();
   else
-    return nullptr;
+    return new CPUPerformanceDriver();
 }
 
 //
