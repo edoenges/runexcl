@@ -51,6 +51,7 @@ struct RunExclArgs
 {
   CPUSet mSet;
   double mFrequency;
+  bool   mIsolate;
 } gArgs;
 
 // Helper class to save and restore I/O stream format manipulators.
@@ -122,6 +123,7 @@ void usage(int exit_code)
       std::cerr, 79, 2, 28,
       "-c, --cpu-list <list>\tList of CPUs to use.\n"
       "-f, --frequency <freq>|max|min|nonlinear\tFrequency to set CPUs to.\n"
+      "-i, --isolate\tIsolate selected CPUs.\n"
       "\n");
   exit(exit_code);
 }
@@ -130,6 +132,7 @@ static struct option sLongOptions[] = {{"cpu-list", required_argument, nullptr,
                                         'c'},
                                        {"frequency", required_argument,
                                         nullptr, 'f'},
+                                       {"isolate", no_argument, nullptr, 'i'},
                                        {"verbose", no_argument, nullptr, 'v'},
                                        {nullptr, 0, nullptr, 0}};
 
@@ -137,7 +140,8 @@ int main(int argc, char** argv)
 {
   int c, index;
   // The '+' tells getopt_long not to rearange the options.
-  while (-1 != (c = getopt_long(argc, argv, "+c:f:v", sLongOptions, &index))) {
+  while (-1 !=
+         (c = getopt_long(argc, argv, "+c:f:iv", sLongOptions, &index))) {
     switch (c) {
     case 'c': // cpu
       try {
@@ -191,13 +195,17 @@ int main(int argc, char** argv)
       }
     } break;
 
+    case 'i': // isolated
+      gArgs.mIsolate = true;
+      break;
+
     case 'v': // verbose
       break;
 
-    case '?': // getopt_long should already have reported an error.
-      break;
-
+    case '?':
     default:
+      // getopt_long should have output an error message.
+      std::cout << std::endl;
       usage(1);
     }
   }
@@ -241,7 +249,10 @@ int main(int argc, char** argv)
       return 1;
     }
 
-    CPUCGroup   group(set);
+    CPUCGroup group(set);
+    if (gArgs.mIsolate)
+      group.isolate(true);
+
     CPUGovernor governor;
     if (gArgs.mFrequency != 0.0)
       governor.set_frequency(set, gArgs.mFrequency);
