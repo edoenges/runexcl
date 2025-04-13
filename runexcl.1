@@ -1,0 +1,24 @@
+.\" Manpage for runexcl
+.TH man 1 "13 Apr 2025" "1.0" "runexcl man page"
+.SH NAME
+runexcl \- run command on exclusive CPU set
+.SH SYNOPSIS
+.B runexcl [options] \fIcommand\fR
+.SH DESCRIPTION
+.B runexcl
+runs a command on the selected CPUs.
+.SH OPTIONS
+.TP
+.BR \-c ", " \-\-cpu-list " " \fILIST\fR
+List of CPUs to use. The list consists of comma seperated CPU numbers or ranges,
+e.g. \fB0,2-5\fR will select CPUs 0, 2, 3, 4, and 5. 
+.PP
+.BR \-f ", " \-\-frequency " " \fIFREQ\fR | max | min | nonlinear
+Frequency to set the CPUs to. You can either specify the frequency directly, or
+use the special values \fBmax\fR, \fBmin\fR, or \fBnonlinear\fR to set the
+clockspeed to maximum, minimum, or the lowest clock speed at which nonlinear
+power savings are achieved (when using the AMD pstate frequency governor),
+respectively.
+.PP
+.BR \-i ", " \-\-isolate
+Isolate the selected CPUs, i.e. turn off load balancing for the selected CPUs.

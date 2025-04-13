@@ -273,23 +273,26 @@ int main(int argc, char** argv)
 
         // Drop root privileges. Since runexcl will run as a SUID binary, it
         // should not be necessary to fiddle with the supplementary groups, as
-        // those should be set correctly for the user running the binary - we only
-        // need to drop the primary group in case the group S-bit is also set on
-        // the binary.
+        // those should be set correctly for the user running the binary - we
+        // only need to drop the primary group in case the group S-bit is also
+        // set on the binary.
         if (::setgid(getgid()) || ::setuid(getuid()))
           throw std::system_error(errno, std::system_category(),
                                   "Could not drop privileges:");
 
-        // Close all open file descriptors except stdin, stdout, and stderr. This
-        // is necessary because we cannot be sure all file descriptors where
-        // opened with the FD_CLOEXEC flag.
+        // Close all open file descriptors except stdin, stdout, and stderr.
+        // This is necessary because we cannot be sure all file descriptors
+        // where opened with the FD_CLOEXEC flag. Note that we don't use
+        // std::filesystem::directory_iterator here because getting at the
+        // necessary information is more convenient using the POSIX APIs
+        // directly.        
         DIR* dir = ::opendir("/proc/self/fd");
         if (dir) {
           int dfd = ::dirfd(dir);
           for (struct dirent* entry; entry = ::readdir(dir);) {
             // /proc/self/fd should only contain '.', '..', or names consisting
-            // only of digits. strtol will return 0 for '.' and '..', so we don't
-            // need to check for invalid characters in strtol.
+            // only of digits. strtol will return 0 for '.' and '..', so we
+            // don't need to check for invalid characters in strtol.
             int fd = ::strtol(entry->d_name, nullptr, 10);
             if ((fd > 2) && (fd != dfd))
               ::close(fd);
