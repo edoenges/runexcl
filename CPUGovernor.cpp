@@ -98,7 +98,8 @@ public:
 
     int _freq = mScalingMinFreq;
     if (freq > 1.0) {
-      _freq = (int)freq;
+      // The scaling governor expects the frequency to be in kHz.
+      _freq = (int)(freq / 1000.0);
     }
     else if ((0.0 <= freq) && (freq <= 1.0)) {
       _freq = (int)mScalingMaxFreq * freq;
