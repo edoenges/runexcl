@@ -1,5 +1,6 @@
 // CPUGovernor.hpp
 // Copyright (c) 2025-2025 Eric Doenges. All rights reserved.
+// SPDX-License-Identifier: ZLib
 //
 // This software is provided 'as-is', without any express or implied
 // warranty. In no event will the authors be held liable for any damages
